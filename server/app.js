@@ -5,6 +5,7 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
 const messages = [];
+const messagePrivate = [];
 var onlines = [];
 var allClients = [];
 
@@ -16,7 +17,7 @@ io.on('connection', (socket) => {
   const users = [];
   for (let [id, socket] of io.of("/").sockets) {
     users.push({
-      userID: id,
+      userID: socket.id,
       user: socket.handshake.query.username,
     });
   }
@@ -36,14 +37,22 @@ io.on('connection', (socket) => {
     onlines.push({user: data['user']});
     io.emit('online',onlines)
   })
-  socket.on("private message", ({ content, to }) => {
+  socket.on("private message", ({ msg, to, time, color }) => {
     socket.to(to).emit("private message", {
-      content,
-      from: socket.id,
+        msg: msg,
+        from: socket.id,
+        time: time,
+        color: color,
     });
   });
   socket.on('disconnect', function() {
     console.log('Got disconnect!');
+    users.forEach(user => {
+      if(user.user == socket.handshake.query.username){
+        users.pop(user);
+      }
+    });
+    io.emit("users", users);
 
     var i = allClients.indexOf(socket);
     allClients.splice(i, 1);
