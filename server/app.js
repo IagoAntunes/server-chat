@@ -15,6 +15,7 @@ io.on('connection', (socket) => {
   allClients.push(socket);
   const username = socket.handshake.query.username;
   const users = [];
+
   for (let [id, socket] of io.of("/").sockets) {
     users.push({
       userID: socket.id,
@@ -22,6 +23,8 @@ io.on('connection', (socket) => {
     });
   }
   io.emit("users", users);
+
+  //Mensagem
   socket.on('message', (data) => {
     const message = {
       msg: data['msg'],
@@ -33,10 +36,14 @@ io.on('connection', (socket) => {
     io.emit('message', message)
 
   });
+
+  //Usuarios Online
   socket.on('online',(data) => {
     onlines.push({user: data['user']});
     io.emit('online',onlines)
   })
+
+  //Mensagem Privada
   socket.on("private message", ({ msg, to, time, color }) => {
     socket.to(to).emit("private message", {
         msg: msg,
@@ -45,6 +52,8 @@ io.on('connection', (socket) => {
         color: color,
     });
   });
+
+  //Desconectar
   socket.on('disconnect', function() {
     console.log('Got disconnect!');
     users.forEach(user => {
@@ -59,6 +68,7 @@ io.on('connection', (socket) => {
   });
 });
 
+//Server
 server.listen(4590, () => {
   console.log('listening on *:3000');
 });

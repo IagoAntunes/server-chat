@@ -1,12 +1,12 @@
 {
-  "name": "flutter_socket_io_backend",
+  "name": "chat-backend",
   "version": "1.0.0",
-  "description": "Socket.IO backend of Flutter App",
+  "description": "backend chat",
   "main": "app.js",
   "scripts": {
     "start": "nodemon app.js"
   },
-  "author": "abhidiwakar",
+  "author": "IagoAntunes",
   "license": "ISC",
   "devDependencies": {
     "nodemon": "^2.0.15"
